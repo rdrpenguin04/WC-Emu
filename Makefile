@@ -1,12 +1,14 @@
-CXX := g++
+OFILES = src/main.o src/bus.o
 
-OFILES=src/main.o
-
-LDFLAGS :=
+CFLAGS := -std=c++11
+LDFLAGS := -std=c++11
 
 TARGET=wcEmu
 
 all: wcEmu
 
-$(TARGET): $(OFILES) | Makefile
+$(TARGET): $(OFILES) Makefile
 	$(CXX) -o $(TARGET) $(LDFLAGS) $(OFILES)
+
+clean:
+	rm -f $(OFILES) $(TARGET)
