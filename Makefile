@@ -13,3 +13,8 @@ $(TARGET): $(OFILES) Makefile
 
 clean:
 	rm -f $(OFILES) $(TARGET)
+
+rebuild:
+	make clean
+	+make
+	
