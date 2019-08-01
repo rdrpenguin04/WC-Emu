@@ -1,7 +1,8 @@
-OFILES = src/main.o src/bus.o
+OFILES = src/main.o src/bus.o 
 
-CFLAGS := -std=c++11
-LDFLAGS := -std=c++11
+CXXFLAGS := -std=c++11
+CFLAGS := -std=c11
+LDFLAGS := 
 
 TARGET=wcEmu
 
