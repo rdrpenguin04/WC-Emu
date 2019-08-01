@@ -9,4 +9,4 @@ TARGET=wcEmu
 all: wcEmu
 
 $(TARGET): $(OFILES) | Makefile
-	$(CXX) -o $(TARGET) $(LDFLAGS) $?
+	$(CXX) -o $(TARGET) $(LDFLAGS) $(OFILES)
