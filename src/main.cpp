@@ -27,6 +27,10 @@ int main() {
                 printf("D\t0x(00)%04X\t%d\n", cpu.getD(), cpu.getD());
                 printf("S\t0x(00)%04X\t%d\n", cpu.getS(), cpu.getS());
                 printf("PC\t0x(%02X)%04X\t%d\n", cpu.getPBR(), cpu.getPC(), cpu.getPC());
+                printf("P\t0x      %02X\t%d\n", cpu.getP(), cpu.getP());
+                printf("Emulation mode: %s\n", cpu.getE() ? "true" : "false");
+            } else {
+                printf("Undefined command: \"%s\". Try... uh, we have no help command.\n", line);
             }
         } // else continue;
     }

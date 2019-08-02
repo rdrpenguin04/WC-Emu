@@ -17,4 +17,7 @@ void w65c816s::reset() {
     setTop8(m_regX, 0);
     setTop8(m_regY, 0);
     m_regPC = m_bus->read(0xFFFC) + (uint16_t(m_bus->read(0xFFFD)) << 8);
+    m_regP &= 0xF7; // 11110111
+    m_regP |= 0x34; // 00110100
+    m_flagE = 1;
 }

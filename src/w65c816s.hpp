@@ -8,16 +8,17 @@ class w65c816s {
 public:
     explicit w65c816s(ExtBus& bus);
     uint8_t tick(); // returns number of cycles used
-    inline uint16_t getC() { return m_regC; }
-    inline uint16_t getX() { return m_regX; }
-    inline uint16_t getY() { return m_regY; }
-    inline uint16_t getD() { return m_regD; }
-    inline uint16_t getS() { return m_regS; }
-    inline uint16_t getPC() { return m_regPC; }
+    inline uint16_t getC()   { return m_regC; }
+    inline uint16_t getX()   { return m_regX; }
+    inline uint16_t getY()   { return m_regY; }
+    inline uint16_t getD()   { return m_regD; }
+    inline uint16_t getS()   { return m_regS; }
+    inline uint16_t getPC()  { return m_regPC; }
     inline uint8_t  getDBR() { return m_regDBR; }
     inline uint8_t  getPBR() { return m_regPBR; }
-    inline uint8_t  getP() { return m_regP; }
-    inline uint8_t  getIR() { return m_regIR; }
+    inline uint8_t  getP()   { return m_regP; }
+    inline uint8_t  getIR()  { return m_regIR; }
+    inline bool     getE()   { return m_flagE; }
 private:
     void reset();
 
@@ -40,4 +41,6 @@ private:
     uint8_t m_regDBR;
     uint8_t m_regP;
     uint8_t m_regIR;
+
+    bool m_flagE; // Emulation flag, accessed by writing to P.
 };
