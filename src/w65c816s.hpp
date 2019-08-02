@@ -6,7 +6,7 @@
 
 class w65c816s {
 public:
-    explicit w65c816s(ExtBus bus);
+    explicit w65c816s(ExtBus& bus);
     uint8_t tick(); // returns number of cycles used
     inline uint16_t getC() { return m_regC; }
     inline uint16_t getX() { return m_regX; }
@@ -21,7 +21,7 @@ public:
 private:
     void reset();
 
-    ExtBus m_bus;
+    ExtBus* m_bus;
 
     uint16_t m_busAddr;
     bool     m_busAddrWritten;

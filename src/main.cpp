@@ -9,7 +9,7 @@ int main() {
            "Warp Chess by (fill in later)\n", 1, 0);
 
     ExtBus bus;
-    w65c816s cpu(bus);
+    w65c816s cpu{bus};
 
     while(1) {
         printf("> ");

@@ -1,6 +1,6 @@
 #include "w65c816s.hpp"
 
-w65c816s::w65c816s(ExtBus bus): m_bus(bus) {
+w65c816s::w65c816s(ExtBus& bus): m_bus(&bus) {
     reset();
 }
 
@@ -16,5 +16,5 @@ void w65c816s::reset() {
     setTop8(m_regS, 1);
     setTop8(m_regX, 0);
     setTop8(m_regY, 0);
-    m_regPC = m_bus.read(0xFFFC) + (uint16_t(m_bus.read(0xFFFD)) << 8);
+    m_regPC = m_bus->read(0xFFFC) + (uint16_t(m_bus->read(0xFFFD)) << 8);
 }

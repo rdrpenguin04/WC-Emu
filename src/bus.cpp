@@ -2,12 +2,12 @@
 
 uint8_t ExtBus::read(uint32_t loc) {
     bool valSet = 0;
-    for(std::vector<Component*>::iterator it = m_components.begin(); it != m_components.end(); it++) {
-        if((**it).respondToRead(loc)) {
+    for(auto&& comp:this->m_components) {
+        if(comp->respondToRead(loc)) {
             if(valSet)
-                m_status &= (**it).read(loc);
+                m_status &= comp->read(loc);
             else {
-                m_status  = (**it).read(loc);
+                m_status  = comp->read(loc);
                 valSet = 1;
             }
         }
