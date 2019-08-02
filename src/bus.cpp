@@ -2,7 +2,7 @@
 
 uint8_t ExtBus::read(uint32_t loc) {
     bool valSet = 0;
-    for(auto&& comp:this->m_components) {
+    for(Component* comp : m_components) {
         if(comp->respondToRead(loc)) {
             if(valSet)
                 m_status &= comp->read(loc);
