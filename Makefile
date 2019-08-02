@@ -1,8 +1,8 @@
 OFILES = src/main.o src/bus.o src/w65c816s.o
 
-CXXFLAGS := -std=c++11
-CFLAGS := -std=c11
-LDFLAGS :=
+CXXFLAGS := -g -std=c++11
+CFLAGS := -g -std=c11
+LDFLAGS := -g
 
 TARGET=wcEmu
 
