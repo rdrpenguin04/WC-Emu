@@ -1,4 +1,4 @@
-OFILES = src/main.o src/bus.o
+OFILES = src/main.o src/bus.o src/w65c816s.o
 
 CXXFLAGS := -std=c++11
 CFLAGS := -std=c11
