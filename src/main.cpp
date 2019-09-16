@@ -1,5 +1,7 @@
 #include <cstdio>
 #include <cstring>
+#include "components/ram.hpp"
+#include "components/rom.hpp"
 #include "bus.hpp"
 #include "w65c816s.hpp"
 
@@ -8,7 +10,10 @@ int main() {
            "by Lightning Creations\n\n"\
            "Warp Chess by (fill in later)\n", 1, 0);
 
-    ExtBus bus;
+    ExtBus bus({
+        new RAMComponent(),
+        new ROMComponent()
+    });
     w65c816s cpu(bus);
 
     while(1) {
@@ -29,6 +34,8 @@ int main() {
                 printf("PC\t0x(%02X)%04X\t%d\n", cpu.getPBR(), cpu.getPC(), cpu.getPC());
                 printf("P\t0x      %02X\t%d\n", cpu.getP(), cpu.getP());
                 printf("Emulation mode: %s\n", cpu.getE() ? "true" : "false");
+            } else if(strcmp("s", line) == 0) {
+                printf("Tick took %d cycles.\n", cpu.tick());
             } else {
                 printf("Undefined command: \"%s\". Try... uh, we have no help command.\n", line);
             }
