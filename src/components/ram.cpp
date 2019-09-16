@@ -11,3 +11,4 @@ uint8_t RAMComponent::read(uint32_t loc) {
 void RAMComponent::write(uint32_t loc, uint8_t val) {
   RAM[loc&0xFFFF] = val;
 }
+

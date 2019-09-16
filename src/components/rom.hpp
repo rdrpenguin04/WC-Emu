@@ -1,17 +1,18 @@
 #pragma once
 
 #include "component.hpp"
+#include <memory>
 
 class ROMComponent: public Component {
 private:
-  uint8_t *ROM;
+  std::unique_ptr<uint8_t[]> ROM;
 protected:
-  ~ROMComponent() = default;
+  
 public:
-  ROMComponent() {
-    ROM = new uint8_t[0x8000];
+  ROMComponent() : ROM{new uint8_t[0x8000]} {
     reloadROM();
   }
+  ~ROMComponent() = default;
   bool respondToRead(uint32_t loc);
   uint8_t read(uint32_t loc);
   void write(uint32_t loc, uint8_t val);

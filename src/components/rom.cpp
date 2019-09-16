@@ -17,17 +17,16 @@ void ROMComponent::write(uint32_t loc, uint8_t val) {
 }
 
 void ROMComponent::reloadROM() {
-  std::ifstream romFile;
+  std::ifstream romFile{"rom/wc.bin", std::ios::in|std::ios::binary};
   size_t fileSize = 0;
-  romFile.open("rom/wc.bin", std::ios::in|std::ios::binary);
 
   if(romFile.is_open()) {
     romFile.seekg(0, std::ios::end);
     fileSize = romFile.tellg();
     romFile.seekg(0, std::ios::beg);
 
-    ROM = new uint8_t[fileSize];
-    romFile.read((char*)ROM, fileSize);
+    ROM.reset(new uint8_t[fileSize]);
+    romFile.read((char*)ROM.get(), fileSize);
   } else {
     printf("ERROR: Couldn't load ROM file!");
   }
