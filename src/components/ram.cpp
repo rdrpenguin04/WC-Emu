@@ -1,7 +1,7 @@
 #include "ram.hpp"
 
 bool RAMComponent::respondToRead(uint32_t loc) {
-  return loc & 0xFFFF < 0x4000;
+  return (loc & 0xFFFF) < 0x4000;
 }
 
 uint8_t RAMComponent::read(uint32_t loc) {

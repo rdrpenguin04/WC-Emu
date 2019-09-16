@@ -5,7 +5,7 @@
 #include "rom.hpp"
 
 bool ROMComponent::respondToRead(uint32_t loc) {
-  return loc & 0xFFFF >= 0x8000;
+  return (loc & 0xFFFF) >= 0x8000;
 }
 
 uint8_t ROMComponent::read(uint32_t loc) {
