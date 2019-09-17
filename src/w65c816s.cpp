@@ -31,9 +31,30 @@ uint8_t w65c816s::tick() {
     m_regIR = m_bus->read((m_regPBR << 16) | (m_regPC & 0xFFFF)); numCycles++;
 
     if(m_flagRDY && !m_flagIRQ) {
-        printf("Waiting for IRQ...");
+        printf("Waiting for IRQ...\n");
         return numCycles;
     }
+
+    if(m_flagIRQ && !(m_regP & 0x04)) {
+        printf("IRQ\n");
+        numCycles++; // Internal Operation..?
+        m_bus->write(m_regS--, m_regPBR); numCycles++;
+        m_bus->write(m_regS--, m_regPC>>8); numCycles++;
+        m_bus->write(m_regS--, m_regPC&0xFF); numCycles++;
+        m_bus->write(m_regS--, m_regP); numCycles++;
+        m_regP |= 0x04;
+        m_regP &= 0xF7;
+        m_regPBR = 0;
+        if(m_flagE)
+            m_regPC = m_bus->read(0xFFFF) + (uint16_t(m_bus->read(0xFFFE)) << 8);
+        else
+            m_regPC = m_bus->read(0xFFEF) + (uint16_t(m_bus->read(0xFFEE)) << 8);
+        numCycles += 2;
+        m_flagIRQ = 0;
+        return numCycles; // GET OUT OF HERE
+    }
+
+    m_flagIRQ = 0; // IRQ has been processed, continuing...
 
     switch(m_regIR) {
     case 0x18: // CLC
