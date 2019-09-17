@@ -46,9 +46,9 @@ uint8_t w65c816s::tick() {
         m_regP &= 0xF7;
         m_regPBR = 0;
         if(m_flagE)
-            m_regPC = m_bus->read(0xFFFF) + (uint16_t(m_bus->read(0xFFFE)) << 8);
+            m_regPC = m_bus->read(0xFFFE) + (uint16_t(m_bus->read(0xFFFF)) << 8);
         else
-            m_regPC = m_bus->read(0xFFEF) + (uint16_t(m_bus->read(0xFFEE)) << 8);
+            m_regPC = m_bus->read(0xFFEE) + (uint16_t(m_bus->read(0xFFEF)) << 8);
         numCycles += 2;
         m_flagIRQ = 0;
         return numCycles; // GET OUT OF HERE

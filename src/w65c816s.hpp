@@ -19,6 +19,7 @@ public:
     inline uint8_t  getP()   { return m_regP; }
     inline uint8_t  getIR()  { return m_regIR; }
     inline bool     getE()   { return m_flagE; }
+    inline void     markIRQ(){ m_flagIRQ = 1; }
 private:
     void reset();
 

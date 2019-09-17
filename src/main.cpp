@@ -51,7 +51,7 @@ int main() {
                 unsigned addr = std::strtol(line,NULL,16);
                 printf("u8 at $(%X): %hhx\n",addr,bus.read(addr));
             } else if(std::strcmp("irq",line)==0){
-                puts("irq not implemented yet\n");
+                cpu.markIRQ();
             } else if(std::strstr(line,"connect char ")==line){
             	std::string uri{line+std::strlen("connect char ")};
             	puts("Connect Not Implemented yet");
