@@ -12,10 +12,9 @@ constexpr int ver_maj{1};
 constexpr int ver_min{0};
 
 int main() {
-   // printf("Warp Chess Emulator v%d.%d\n"\
+    printf("Warp Chess Emulator v%d.%d\n"\
            "by Lightning Creations\n\n"\
-           "Warp Chess by (fill in later)\n", 1, 0);
-    std::cout << "Warp Chess Emulator v"<<ver_maj<<"."<<ver_min << std::endl;
+           "Warp Chess by (fill in later)\n", ver_maj, ver_min);
     RAMComponent ram{};
     ROMComponent rom{};
     ExtBus bus({
@@ -23,13 +22,13 @@ int main() {
         &rom
     });
     w65c816s cpu(bus);
-    
+
 
     while(1) {
         printf("> ");
         char* line = NULL;
         size_t size;
-        
+
         if(getline(&line, &size, stdin) != -1) {
             char * freeLine = line;
             // Minimal parser
@@ -66,6 +65,6 @@ int main() {
         } // else continue;
         std::free(line);
     }
-    
+
     return 0;
 }
