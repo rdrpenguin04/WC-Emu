@@ -22,11 +22,18 @@ void w65c816s::reset() {
     m_regP &= 0xF7; // 11110111
     m_regP |= 0x34; // 00110100
     m_flagE = 1;
+    m_flagRDY = 0;
+    m_flagIRQ = 0;
 }
 
 uint8_t w65c816s::tick() {
     uint8_t numCycles = 0;
     m_regIR = m_bus->read((m_regPBR << 16) | (m_regPC & 0xFFFF)); numCycles++;
+
+    if(m_flagRDY && !m_flagIRQ) {
+        printf("Waiting for IRQ...");
+        return numCycles;
+    }
 
     switch(m_regIR) {
     case 0x18: // CLC
@@ -48,6 +55,11 @@ uint8_t w65c816s::tick() {
         uint16_t oldPage = m_regPC & 0xFF00;
         m_regPC += offset + 2;
         if(m_flagE && (m_regPC & 0xFF00) != oldPage) numCycles++; // Page boundary
+        break;
+    }
+    case 0xCB: // WAI
+    {
+        m_flagRDY = 1;
         break;
     }
     case 0xE2: // SEP

@@ -42,5 +42,7 @@ private:
     uint8_t m_regP;
     uint8_t m_regIR;
 
-    bool m_flagE; // Emulation flag, accessed by writing to P.
+    bool m_flagE; // Emulation flag, accessed with XCE
+    bool m_flagRDY; // Stalls the processor
+    bool m_flagIRQ; // Set upon IRQ
 };
