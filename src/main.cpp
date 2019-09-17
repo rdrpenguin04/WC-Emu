@@ -53,6 +53,12 @@ int main() {
                 printf("u8 at $(%X): %hhx\n",addr,bus.read(addr));
             } else if(std::strcmp("irq",line)==0){
                 puts("irq not implemented yet\n");
+            } else if(std::strstr(line,"connect char ")==line){
+            	std::string uri{line+std::strlen("connect char ")};
+            	puts("Connect Not Implemented yet");
+            } else if(std::strstr(line,"connect cmd ")==line){
+            	std::string uri{line+std::strlen("connect cmd ")};
+            	puts("Connect Not Implemented yet");
             } else {
                 printf("Undefined command: \"%s\". Try... uh, we have no help command.\n", line);
             }
