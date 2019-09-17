@@ -14,3 +14,8 @@ uint8_t ExtBus::read(uint32_t loc) {
     }
     return m_status; // Normal value if one response, AND of multiple if multiple responses, previous value if Open Bus
 }
+
+void ExtBus::write(uint32_t loc, uint8_t val) {
+    for(Component* comp : m_components)
+        comp->write(loc, val);
+}
