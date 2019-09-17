@@ -29,25 +29,49 @@ uint8_t w65c816s::tick() {
     m_regIR = m_bus->read((m_regPBR << 16) | (m_regPC & 0xFFFF)); numCycles++;
 
     switch(m_regIR) {
+    case 0x18: // CLC
+        m_regP &= 0xFE; numCycles++;
+        m_regPC++;
+        break;
     case 0x58: // CLI
         m_regP &= 0xFB; numCycles++;
         m_regPC++;
         break;
+    case 0x78: // SEI
+        m_regP |= 0x04; numCycles++;
+        m_regPC++;
+        break;
     case 0x80: // BRA
     {
-        // TODO: Convert to per-cycle-accurate
-        int8_t offset = m_bus->read((m_regPBR | ((m_regPC + 1) & 0xFFFF))); numCycles++;
+        int8_t offset = m_bus->read((m_regPBR << 16) | ((m_regPC + 1) & 0xFFFF)); numCycles++;
         numCycles++; // Branch taken
         uint16_t oldPage = m_regPC & 0xFF00;
         m_regPC += offset + 2;
         if(m_flagE && (m_regPC & 0xFF00) != oldPage) numCycles++; // Page boundary
         break;
     }
+    case 0xE2: // SEP
+    {
+        int8_t newP = m_bus->read((m_regPBR << 16) | ((m_regPC + 1) & 0xFFFF)); numCycles++;
+        numCycles++; // Well...
+        m_regP |= newP;
+        m_regPC += 2;
+        break;
+    }
     case 0xEA: // NOP
-        // TODO: What the heck happens on cycle 2?
         numCycles++;
         m_regPC++;
         break;
+    case 0xFB: // XCE
+    {
+        bool oldC = m_regP & 0x1;
+        m_regP &= 0xFE; // Clear carry
+        m_regP |= m_flagE ? 1 : 0;
+        m_flagE = oldC;
+        numCycles++;
+        m_regPC++;
+        break;
+    }
     default:
         printf("Opcode 0x%02X not supported! Skipping instruction...\n", m_regIR);
     }
