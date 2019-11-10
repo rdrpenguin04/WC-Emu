@@ -5,6 +5,7 @@
 #include <iostream>
 #include "components/ram.hpp"
 #include "components/rom.hpp"
+#include "components/charPort.hpp"
 #include "bus.hpp"
 #include "w65c816s.hpp"
 
@@ -17,9 +18,11 @@ int main() {
            "Warp Chess by (fill in later)\n", ver_maj, ver_min);
     RAMComponent ram{};
     ROMComponent rom{};
+    CharPortComponent charPort{};
     ExtBus bus{
         &ram,
-        &rom
+        &rom,
+        &charPort
     };
     w65c816s cpu{bus};
 
