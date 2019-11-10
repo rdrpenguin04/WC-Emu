@@ -78,7 +78,7 @@ uint8_t w65c816s::tick() {
     case 0x80: // BRA
     {
         int8_t offset = m_bus->read((m_regPBR << 16) | ((m_regPC + 1) & 0xFFFF)); numCycles++;
-        numCycles++; // Branch taken
+        if(m_flagE) numCycles++; // Branch taken
         uint16_t oldPage = m_regPC & 0xFF00;
         m_regPC += offset + 2;
         if(m_flagE && (m_regPC & 0xFF00) != oldPage) numCycles++; // Page boundary
@@ -87,11 +87,28 @@ uint8_t w65c816s::tick() {
     case 0x89: // BIT
     {
         m_regPC++;
-        int16_t test = m_bus->read((m_regPBR << 16) | ((m_regPC + 1) & 0xFFFF)); m_regPC++; numCycles++;
-        if(!(m_regP & 0x20)) { test |= m_bus->read((m_regPBR << 16) | ((m_regPC + 1) & 0xFFFF)) << 16; m_regPC++; numCycles++; }
+        int16_t test = m_bus->read((m_regPBR << 16) | (m_regPC & 0xFFFF)); m_regPC++; numCycles++;
+        if(!(m_regP & 0x20)) { test |= m_bus->read((m_regPBR << 16) | (m_regPC & 0xFFFF)) << 8; m_regPC++; numCycles++; }
         test &= m_regC;
         if(test == 0) m_regP |= 0x02; else m_regP &= ~0x02;
         // TODO: Do the other flags
+        break;
+    }
+    case 0x8E: // STX
+    {
+        m_regPC++;
+        int16_t location = m_bus->read((m_regPBR << 16) | (m_regPC & 0xFFFF)); m_regPC++; numCycles++;
+        location |= m_bus->read((m_regPBR << 16) | (m_regPC & 0xFFFF)) << 8; m_regPC++; numCycles++;
+        m_bus->write((m_regDBR << 16) | location, m_regX & 0xFF); numCycles++;
+        if(!(m_regP & 0x10)) { m_bus->write((m_regDBR << 16) | (location + 1), m_regX >> 8); }
+        break;
+    }
+    case 0xA2: // LDX
+    {
+        m_regPC++;
+        int16_t newVal = m_bus->read((m_regPBR << 16) | (m_regPC & 0xFFFF)); m_regPC++; numCycles++;
+        if(!(m_regP & 0x10)) { newVal |= m_bus->read((m_regPBR << 16) | (m_regPC & 0xFFFF)) << 8; m_regPC++; numCycles++; }
+        m_regX = newVal;
         break;
     }
     case 0xCB: // WAI
@@ -112,6 +129,19 @@ uint8_t w65c816s::tick() {
         numCycles++;
         m_regPC++;
         break;
+    case 0xF0: // BEQ
+    {
+        if(m_regP & 0x02) {
+            int8_t offset = m_bus->read((m_regPBR << 16) | ((m_regPC + 1) & 0xFFFF)); numCycles++;
+            if(m_flagE) numCycles++;
+            uint16_t oldPage = m_regPC & 0xFF00;
+            m_regPC += offset + 2;
+            if(m_flagE && (m_regPC & 0xFF00) != oldPage) numCycles++; // Page boundary
+        } else {
+            m_regPC += 2;
+        }
+        break;
+    }
     case 0xFB: // XCE
     {
         bool oldC = m_regP & 0x1;
