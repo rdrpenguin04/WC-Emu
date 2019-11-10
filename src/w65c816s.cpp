@@ -50,6 +50,7 @@ uint8_t w65c816s::tick() {
         else
             m_regPC = m_bus->read(0xFFEE) + (uint16_t(m_bus->read(0xFFEF)) << 8);
         numCycles += 2;
+        m_flagRDY = 0;
         m_flagIRQ = 0;
         return numCycles; // GET OUT OF HERE
     }
@@ -59,6 +60,11 @@ uint8_t w65c816s::tick() {
     switch(m_regIR) {
     case 0x18: // CLC
         m_regP &= 0xFE; numCycles++;
+        m_regPC++;
+        break;
+    case 0x1A: // INC
+        // TODO: Set status flags
+        m_regC++;
         m_regPC++;
         break;
     case 0x58: // CLI
@@ -78,9 +84,20 @@ uint8_t w65c816s::tick() {
         if(m_flagE && (m_regPC & 0xFF00) != oldPage) numCycles++; // Page boundary
         break;
     }
+    case 0x89: // BIT
+    {
+        m_regPC++;
+        int16_t test = m_bus->read((m_regPBR << 16) | ((m_regPC + 1) & 0xFFFF)); m_regPC++; numCycles++;
+        if(!(m_regP & 0x20)) { test |= m_bus->read((m_regPBR << 16) | ((m_regPC + 1) & 0xFFFF)) << 16; m_regPC++; numCycles++; }
+        test &= m_regC;
+        if(test == 0) m_regP |= 0x02; else m_regP &= ~0x02;
+        // TODO: Do the other flags
+        break;
+    }
     case 0xCB: // WAI
     {
         m_flagRDY = 1;
+        m_regPC++; // Get ready to run next instruction
         break;
     }
     case 0xE2: // SEP
