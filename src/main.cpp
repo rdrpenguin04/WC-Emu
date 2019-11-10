@@ -17,11 +17,11 @@ int main() {
            "Warp Chess by (fill in later)\n", ver_maj, ver_min);
     RAMComponent ram{};
     ROMComponent rom{};
-    ExtBus bus({
+    ExtBus bus{
         &ram,
         &rom
-    });
-    w65c816s cpu(bus);
+    };
+    w65c816s cpu{bus};
 
 
     while(1) {
