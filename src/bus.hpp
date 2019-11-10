@@ -1,5 +1,7 @@
 #include <cstdint>
 #include <vector>
+#include <initializer_list>
+#include <functional>
 
 #include "components/component.hpp"
 
@@ -7,8 +9,7 @@
 
 class ExtBus {
 public:
-    ExtBus()=default;
-    explicit ExtBus(std::vector<Component*> components): m_components(std::move(components)){}
+    explicit ExtBus(const std::initializer_list<Component*>& components): m_components{components}{}
     uint8_t read(uint32_t loc);
     void write(uint32_t loc, uint8_t val);
 private:
