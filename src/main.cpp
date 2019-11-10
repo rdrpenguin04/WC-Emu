@@ -49,6 +49,14 @@ int main() {
                 printf("Emulation mode: %s\n", cpu.getE() ? "true" : "false");
             } else if(std::strcmp("s", line) == 0) {
                 printf("Tick took %d cycles.\n", cpu.tick());
+            } else if(std::strcmp("r", line) == 0) {
+                printf("Starting continuous run...\n");
+                int timer = 0;
+                while(1) {
+                    cpu.tick();
+                    timer++;
+                    if(timer == 100) { timer = 0; cpu.markIRQ(); } // This is way too short of a timespan. I don't care ATM.
+                }
             } else if(std::strstr(line,"read ")==line){
                 line+=5;
                 unsigned addr = std::strtol(line,NULL,16);

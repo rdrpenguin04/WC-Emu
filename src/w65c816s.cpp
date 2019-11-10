@@ -38,7 +38,7 @@ uint8_t w65c816s::tick() {
     if(m_flagIRQ && !(m_regP & 0x04)) {
         printf("IRQ\n");
         numCycles++; // Internal Operation..?
-        m_bus->write(m_regS--, m_regPBR); numCycles++;
+        if(!m_flagE) { m_bus->write(m_regS--, m_regPBR); numCycles++; }
         m_bus->write(m_regS--, m_regPC>>8); numCycles++;
         m_bus->write(m_regS--, m_regPC&0xFF); numCycles++;
         m_bus->write(m_regS--, m_regP); numCycles++;
@@ -67,6 +67,21 @@ uint8_t w65c816s::tick() {
         m_regC++;
         m_regPC++;
         break;
+    case 0x40: // RTI
+        numCycles += 2; // Internal Operation
+        m_regP = m_bus->read(++m_regS); numCycles++;
+        m_regPC = m_bus->read(++m_regS); numCycles++;
+        m_regPC |= m_bus->read(++m_regS) << 8; numCycles++;
+        if(!m_flagE) { m_regPBR = m_bus->read(++m_regS); }
+        break;
+    case 0x4C: // JMP
+    {
+        m_regPC++;
+        int16_t location = m_bus->read((m_regPBR << 16) | (m_regPC & 0xFFFF)); m_regPC++; numCycles++;
+        location |= m_bus->read((m_regPBR << 16) | (m_regPC & 0xFFFF)) << 8; m_regPC++; numCycles++;
+        m_regPC = location;
+        break;
+    }
     case 0x58: // CLI
         m_regP &= 0xFB; numCycles++;
         m_regPC++;
