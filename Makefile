@@ -1,5 +1,5 @@
-WCEMU_OFILES = src/main.o src/bus.o src/w65c816s.o src/components/ram.o src/components/rom.o src/components/charPort.o
-WCCONNECT_OFILES = src/connect.o
+WCEMU_OFILES = src/main.o src/bus.o src/w65c816s.o src/components/ram.o src/components/rom.o src/components/charPort.o src/socket.o
+WCCONNECT_OFILES = src/connect.o src/socket.o
 
 CXXFLAGS := -pedantic -g -std=c++11
 CFLAGS := -pedantic -g -std=c11

@@ -56,20 +56,15 @@ int main() {
                     timer++;
                     if(timer == 100) { timer = 0; cpu.markIRQ(); } // This is way too short of a timespan. I don't care ATM.
                 }
-            } else if(std::strstr(line,"read ")==line){
+            } else if(std::strstr(line,"read ")==line) {
                 line+=5;
                 unsigned addr = std::strtol(line,NULL,16);
                 printf("u8 at $(%X): %hhx\n",addr,bus.read(addr));
-            } else if(std::strcmp("irq",line)==0){
+            } else if(std::strcmp("irq",line)==0) {
                 cpu.markIRQ();
-            } else if(std::strstr(line,"connect char ")==line){
-            	std::string uri{line+std::strlen("connect char ")};
-                FILE *charOut = fopen(("/proc/"+uri+"/fd/0").c_str(), "w");
-                charPort.setOutput(charOut);
+            } else if(std::strcmp("connect char",line)==0) {
+                charPort.conn();
                 puts("Done\n");
-            } else if(std::strstr(line,"connect cmd ")==line){
-            	std::string uri{line+std::strlen("connect cmd ")};
-            	puts("Connect Not Implemented yet\n");
             } else {
                 printf("Undefined command: \"%s\". Try... uh, we have no help command.\n", line);
             }
