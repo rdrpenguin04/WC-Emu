@@ -26,7 +26,6 @@ int main() {
     };
     w65c816s cpu{bus};
 
-
     while(1) {
         printf("> ");
         char* line = NULL;
@@ -65,10 +64,12 @@ int main() {
                 cpu.markIRQ();
             } else if(std::strstr(line,"connect char ")==line){
             	std::string uri{line+std::strlen("connect char ")};
-            	puts("Connect Not Implemented yet");
+                FILE *charOut = fopen(("/proc/"+uri+"/fd/0").c_str(), "w");
+                charPort.setOutput(charOut);
+                puts("Done\n");
             } else if(std::strstr(line,"connect cmd ")==line){
             	std::string uri{line+std::strlen("connect cmd ")};
-            	puts("Connect Not Implemented yet");
+            	puts("Connect Not Implemented yet\n");
             } else {
                 printf("Undefined command: \"%s\". Try... uh, we have no help command.\n", line);
             }

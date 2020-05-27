@@ -11,6 +11,9 @@ uint8_t CharPortComponent::read(uint32_t loc) {
 }
 
 void CharPortComponent::write(uint32_t loc, uint8_t val) {
-  if(loc == 0x4800) fprintf(stderr, "%c", val);
+  if(loc == 0x4800) fprintf(output, "%c", val);
 }
 
+void CharPortComponent::setOutput(FILE *newOut) {
+  output = newOut;
+}
