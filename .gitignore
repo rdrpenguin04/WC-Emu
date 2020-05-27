@@ -38,3 +38,7 @@ wcConnect
 .cproject
 .project
 .settings/
+
+# CMake Directories
+cmake-build-debug/
+build/

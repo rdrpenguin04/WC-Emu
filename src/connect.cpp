@@ -6,6 +6,7 @@
 
 const char *socket_path = "wc_connect_sock";
 
+
 int main() {
     sockInit();
     std::printf("Warp Chess Connector v1.0\nby Ray Redondo\n");
