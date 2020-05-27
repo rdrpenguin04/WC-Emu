@@ -31,12 +31,10 @@ uint8_t w65c816s::tick() {
     m_regIR = m_bus->read((m_regPBR << 16) | (m_regPC & 0xFFFF)); numCycles++;
 
     if(m_flagRDY && !m_flagIRQ) {
-        printf("Waiting for IRQ...\n");
         return numCycles;
     }
 
     if(m_flagIRQ && !(m_regP & 0x04)) {
-        printf("IRQ\n");
         numCycles++; // Internal Operation..?
         if(!m_flagE) { m_bus->write(m_regS--, m_regPBR); numCycles++; }
         m_bus->write(m_regS--, m_regPC>>8); numCycles++;
