@@ -8,34 +8,38 @@
 // Ready for more platform compatibility heck? Here we go!
 #ifdef _WIN32
 #include <conio.h>
+#define changemode(x)
 #else
 // Code from https://cboard.cprogramming.com/c-programming/63166-kbhit-linux.html
 #include <termios.h>
 #include <unistd.h>
-#include <fcntl.h>
+#include <sys/time.h>
+#include <sys/types.h>
+
+void changemode(int dir) {
+    static struct termios oldt, newt;
+
+    if(dir == 1) {
+        tcgetattr(STDIN_FILENO, &oldt);
+        newt = oldt;
+        newt.c_lflag &= ~(ICANON | ECHO);
+        tcsetattr(STDIN_FILENO, TCSANOW, &newt);
+    } else
+        tcsetattr(STDIN_FILENO, TCSANOW, &oldt);
+}
 
 int kbhit() {
-    struct termios oldt, newt;
-    int ch;
-    int oldf;
+    struct timeval tv;
+    fd_set rdfs;
 
-    tcgetattr(STDIN_FILENO, &oldt);
-    newt = oldt;
-    newt.c_lflag &= ~(ICANON | ECHO);
-    tcsetattr(STDIN_FILENO, TCSANOW, &newt);
-    oldf = fcntl(STDIN_FILENO, F_SETFL, oldf | O_NONBLOCK);
+    tv.tv_sec = 0;
+    tv.tv_usec = 0;
 
-    ch = getchar();
+    FD_ZERO(&rdfs);
+    FD_SET(STDIN_FILENO, &rdfs);
 
-    tcsetattr(STDIN_FILENO, TCSANOW, &oldt);
-    fcntl(STDIN_FILENO, F_SETFL, oldf);
-
-    if(ch != EOF) {
-        ungetc(ch, stdin);
-        return 1;
-    }
-
-    return 0;
+    select(STDIN_FILENO+1, &rdfs, NULL, NULL, &tv);
+    return FD_ISSET(STDIN_FILENO, &rdfs);
 }
 #endif
 
@@ -55,12 +59,14 @@ int main() {
     SOCKET cl = accept(sock, NULL, NULL);
     char *buf = (char*)std::malloc(sizeof(char));
     while(1) {
+        changemode(1);
         while(!kbhit()) {
             int8_t received = recv(cl, buf, 1, 0);
-            if(received) std::printf("%c", buf[0]);
+            if(received && buf[0]) std::printf("%c", buf[0]);
         }
+        changemode(0);
+        printf("Meep.\n");
         char c = getchar();
-        putc(c, stdout);
         sendc(sock, c);
     }
     // sockQuit();
