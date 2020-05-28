@@ -129,7 +129,7 @@ uint8_t w65c816s::tick() {
     case 0x8D: // STA
     {
         m_regPC++;
-        int16_t location = m_bus->read((m_regPBR << 16) | (m_regPC & 0xFFFF)); m_regPC++; numCycles++;
+        uint16_t location = m_bus->read((m_regPBR << 16) | (m_regPC & 0xFFFF)); m_regPC++; numCycles++;
         location |= m_bus->read((m_regPBR << 16) | (m_regPC & 0xFFFF)) << 8; m_regPC++; numCycles++;
         m_bus->write((m_regDBR << 16) | location, m_regC & 0xFF); numCycles++;
         if(!(m_regP & 0x10)) { m_bus->write((m_regDBR << 16) | (location + 1), m_regC >> 8); }
@@ -138,7 +138,7 @@ uint8_t w65c816s::tick() {
     case 0x8E: // STX
     {
         m_regPC++;
-        int16_t location = m_bus->read((m_regPBR << 16) | (m_regPC & 0xFFFF)); m_regPC++; numCycles++;
+        uint16_t location = m_bus->read((m_regPBR << 16) | (m_regPC & 0xFFFF)); m_regPC++; numCycles++;
         location |= m_bus->read((m_regPBR << 16) | (m_regPC & 0xFFFF)) << 8; m_regPC++; numCycles++;
         m_bus->write((m_regDBR << 16) | location, m_regX & 0xFF); numCycles++;
         if(!(m_regP & 0x10)) { m_bus->write((m_regDBR << 16) | (location + 1), m_regX >> 8); }
@@ -163,6 +163,15 @@ uint8_t w65c816s::tick() {
         int16_t newVal = m_bus->read((m_regPBR << 16) | (m_regPC & 0xFFFF)); m_regPC++; numCycles++;
         if(!(m_regP & 0x20)) { newVal |= m_bus->read((m_regPBR << 16) | (m_regPC & 0xFFFF)) << 8; m_regPC++; numCycles++; }
         m_regC = newVal;
+        break;
+    }
+    case 0xAD: // LDA
+    {
+        m_regPC++;
+        uint16_t location = m_bus->read((m_regPBR << 16) | (m_regPC & 0xFFFF)); m_regPC++; numCycles++;
+        location |= m_bus->read((m_regPBR << 16) | (m_regPC & 0xFFFF)) << 8; m_regPC++; numCycles++;
+        int16_t newVal = m_bus->read((m_regDBR << 16) | (location & 0xFFFF)); numCycles++;
+        if(!(m_regP & 0x20)) { newVal |= m_bus->read((m_regDBR << 16) | ((location+1) & 0xFFFF)) << 8; numCycles++; }
         break;
     }
     case 0xC2: // REP
