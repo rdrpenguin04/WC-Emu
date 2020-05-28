@@ -10,7 +10,7 @@ bool CharPortComponent::respondToRead(uint32_t loc) {
 
 uint8_t CharPortComponent::read(uint32_t loc) {
   if(loc != 0x4801) {
-    uint8_t *buf = std::malloc(1);
+    uint8_t *buf = (uint8_t*) std::malloc(1);
     recv(sock, buf, 1, 0);
     return buf[0];
   }
