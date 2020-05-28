@@ -65,6 +65,16 @@ uint8_t w65c816s::tick() {
         m_regC++;
         m_regPC++;
         break;
+    case 0x20: // JSR
+    {
+        uint16_t saved = m_regPC + 2; numCycles++;
+        m_bus->write(m_regS--, saved >> 8); numCycles++;
+        m_bus->write(m_regS--, saved & 0xFF); numCycles++;
+        uint16_t location = m_bus->read((m_regPBR << 16) | ((m_regPC+1) & 0xFFFF)); numCycles++;
+        location |= m_bus->read((m_regPBR << 16) | ((m_regPC+2) & 0xFFFF)) << 8; numCycles++;
+        m_regPC = location;
+        break;
+    }
     case 0x40: // RTI
         numCycles += 2; // Internal Operation
         m_regP = m_bus->read(++m_regS); numCycles++;
@@ -75,7 +85,7 @@ uint8_t w65c816s::tick() {
     case 0x4C: // JMP
     {
         m_regPC++;
-        int16_t location = m_bus->read((m_regPBR << 16) | (m_regPC & 0xFFFF)); m_regPC++; numCycles++;
+        uint16_t location = m_bus->read((m_regPBR << 16) | (m_regPC & 0xFFFF)); m_regPC++; numCycles++;
         location |= m_bus->read((m_regPBR << 16) | (m_regPC & 0xFFFF)) << 8; m_regPC++; numCycles++;
         m_regPC = location;
         break;
@@ -84,6 +94,15 @@ uint8_t w65c816s::tick() {
         m_regP &= 0xFB; numCycles++;
         m_regPC++;
         break;
+    case 0x60: // RTS
+    {
+        numCycles += 2; // Internal Operation
+        m_regPC = m_bus->read(++m_regS); numCycles++;
+        m_regPC |= m_bus->read(++m_regS) << 8; numCycles++;
+        numCycles++; // Internal Operation
+        m_regPC++;
+        break;
+    }
     case 0x78: // SEI
         m_regP |= 0x04; numCycles++;
         m_regPC++;
@@ -116,12 +135,25 @@ uint8_t w65c816s::tick() {
         if(!(m_regP & 0x10)) { m_bus->write((m_regDBR << 16) | (location + 1), m_regX >> 8); }
         break;
     }
+    case 0x9A: // TXS
+        m_regPC++;
+        m_regS = m_regX; numCycles++;
+        if(m_flagE) { m_regS &= 0xFF; m_regS |= 0x0100; } // Preserving top byte of S in case of emulation mode
+        break;
     case 0xA2: // LDX
     {
         m_regPC++;
         int16_t newVal = m_bus->read((m_regPBR << 16) | (m_regPC & 0xFFFF)); m_regPC++; numCycles++;
         if(!(m_regP & 0x10)) { newVal |= m_bus->read((m_regPBR << 16) | (m_regPC & 0xFFFF)) << 8; m_regPC++; numCycles++; }
         m_regX = newVal;
+        break;
+    }
+    case 0xC2: // REP
+    {
+        int8_t newP = m_bus->read((m_regPBR << 16) | ((m_regPC + 1) & 0xFFFF)); numCycles++;
+        numCycles++; // Well...
+        m_regP &= ~newP;
+        m_regPC += 2;
         break;
     }
     case 0xCB: // WAI
