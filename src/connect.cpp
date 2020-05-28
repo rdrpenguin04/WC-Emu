@@ -65,9 +65,9 @@ int main() {
             if(received && buf[0]) std::printf("%c", buf[0]);
         }
         changemode(0);
-        printf("Meep.\n");
         char c = getchar();
-        sendc(sock, c);
+        int sent = sendc(sock, c);
+        printf("Meep%d.\n", sent);
     }
     // sockQuit();
 }

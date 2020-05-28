@@ -11,8 +11,15 @@ bool CharPortComponent::respondToRead(uint32_t loc) {
 uint8_t CharPortComponent::read(uint32_t loc) {
   if(loc == 0x4801) {
     uint8_t *buf = (uint8_t*) std::malloc(1);
-    recv(sock, buf, 1, 0);
-    return buf[0];
+    int received = recv(sock, buf, 1, 0);
+    printf("%d", received);
+    if(!received || (received == -1)) {
+        free(buf);
+        return 0;
+    }
+    uint8_t result = buf[0];
+    free(buf);
+    return result;
   }
   return 0;
 }
@@ -22,7 +29,7 @@ void CharPortComponent::write(uint32_t loc, uint8_t val) {
 }
 
 void CharPortComponent::conn() {
-  sock = socket(AF_UNIX, SOCK_STREAM, 0);
+  sock = socket(AF_UNIX, SOCK_NONBLOCK | SOCK_STREAM, 0);
   struct sockaddr_un addr;
   memset(&addr, 0, sizeof(addr));
   addr.sun_family = AF_UNIX;

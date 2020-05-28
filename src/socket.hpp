@@ -20,4 +20,4 @@ int sockInit();
 int sockQuit();
 int sockClose(SOCKET);
 
-void sendc(SOCKET, char);
+int sendc(SOCKET, char);

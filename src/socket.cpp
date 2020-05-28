@@ -1,4 +1,6 @@
+#include <cerrno>
 #include <cstdlib>
+#include <cstdio>
 #include "socket.hpp"
 
 int sockInit() {
@@ -32,9 +34,12 @@ int sockClose(SOCKET sock) {
   return status;
 }
 
-void sendc(SOCKET sock, char ch) {
+int sendc(SOCKET sock, char ch) {
   char *buf = (char*) std::malloc(sizeof(char));
   buf[0] = ch;
-  send(sock, buf, 1, 0);
+  int result;
+  while((result = send(sock, buf, 1, 0)) == 0);
+  if(result == -1) std::printf("ERROR AAAA: %d\n", errno);
   std::free(buf);
+  return result;
 }
