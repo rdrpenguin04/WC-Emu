@@ -10,7 +10,9 @@ add_executable(wcConnect src/socket.cpp src/socket.hpp src/connect.cpp)
 
 set(WCEMU_COMPONENTS charPort ram rom)
 
-file(COPY ${CMAKE_CURRENT_SOURCE_DIR}/rom/wc.bin DESTINATION ${CMAKE_CURRENT_BINARY_DIR}/rom)
+add_custom_command(TARGET wcEmu POST_BUILD
+    COMMAND ${CMAKE_COMMAND} -E copy ${CMAKE_CURRENT_SOURCE_DIR}/rom/wc.bin ${CMAKE_CURRENT_BINARY_DIR}/rom/wc.bin
+)
 
 foreach(component ${WCEMU_COMPONENTS})
     add_library(component-${component} OBJECT src/components/component.hpp src/components/${component}.hpp src/components/${component}.cpp)
